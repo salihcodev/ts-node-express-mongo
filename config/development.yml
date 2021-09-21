@@ -1,0 +1,2 @@
+server:
+    token_gen_sec_key: TOKEN_GENERATOR_KEY_FOR_USER

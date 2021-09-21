@@ -1,0 +1,2 @@
+server:
+    db_connection_uri: mongodb://localhost:27017/
