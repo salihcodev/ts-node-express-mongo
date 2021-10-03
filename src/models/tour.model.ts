@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 // create door schema:
 // >>>> door schema
-const doorSchema = new Schema({
+const tourSchema = new Schema({
     createdAt: {
         type: Date,
         default: new Date(),
@@ -11,5 +11,5 @@ const doorSchema = new Schema({
 });
 
 // >>>> create door model
-const Thing = mongoose.model('Thing', doorSchema);
-export default Thing;
+const Tour = mongoose.model('Tour', tourSchema);
+export default Tour;

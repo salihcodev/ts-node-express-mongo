@@ -5,12 +5,16 @@ import config from 'config';
 
 // utils:
 import User from '../models/user.model';
+import { Request, Response } from 'express';
 
 // get token secret key:
 const { token_gen_sec_key } = config.get('server');
 
 // get all users
-export const getRegisteredUsers = async (req: any, res: any): Promise<void> => {
+export const getRegisteredUsers = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     try {
         const allUsers = await User.find();
         res.status(200).json(allUsers);
@@ -23,21 +27,30 @@ export const getRegisteredUsers = async (req: any, res: any): Promise<void> => {
 };
 
 // crete new user handler
-export const signupHandler = async (req: any, res: any): Promise<void> => {
+export const signupHandler = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
 
     try {
         const existedUser = await User.findOne({ email });
 
-        if (existedUser)
-            return res
-                .status(400)
-                .json({ message: `This user is already existed: ${email}` });
+        if (existedUser) {
+            res.status(400).json({
+                message: `This user is already existed: ${email}`,
+            });
 
-        if (password !== confirmPassword)
-            return res
-                .status(400)
-                .json({ message: `Passwords not matched each other.` });
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            res.status(400).json({
+                message: `Passwords not matched each other.`,
+            });
+
+            return;
+        }
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -65,21 +78,30 @@ export const signupHandler = async (req: any, res: any): Promise<void> => {
 };
 
 // logging existed user handler
-export const SignInHandler = async (req: any, res: any): Promise<void> => {
+export const signInHandler = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const { email, password } = req.body;
 
     try {
         const existedUser = await User.findOne({ email });
-        if (!existedUser)
-            return res.status(404).json({
+        if (!existedUser) {
+            res.status(404).json({
                 message: `No user registered with this email: ${email}`,
             });
+
+            return;
+        }
 
         const { password: currUserPass }: any = existedUser;
         const isPasswordCorrect = await bcrypt.compare(password, currUserPass);
 
-        if (!isPasswordCorrect)
-            return res.status(400).json({ message: `Invalid credentials` });
+        if (!isPasswordCorrect) {
+            res.status(400).json({ message: `Invalid credentials` });
+
+            return;
+        }
 
         const userToken = jwt.sign(
             { email: existedUser, id: existedUser._id },

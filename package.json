@@ -1,18 +1,18 @@
 {
-    "name": "ts-node-express-mongo",
+    "name": "traveling-champ",
     "version": "1.0.0",
     "description": "",
     "main": "main.js",
     "scripts": {
         "start": "yarn production && node ./build/main.js",
-        "start:dev": "nodemon",
-        "production": "rimraf ./build && tsc",
+        "start:dev": "NODE_ENV=development nodemon",
+        "production": "NODE_ENV=production rimraf ./build && tsc",
         "lint:lint": "eslint . --ext .ts",
         "lint:fix": "eslint . --ext .ts --fix",
         "format": "prettier --write ."
     },
     "keywords": [],
-    "author": "Ahmed",
+    "author": "@salihcodev",
     "license": "ISC",
     "dependencies": {
         "bcryptjs": "^2.4.3",

@@ -5,13 +5,13 @@ import express from 'express';
 import {
     getRegisteredUsers,
     signupHandler,
-    SignInHandler,
+    signInHandler,
 } from '../controllers/user.controller';
 
 // create new router:
 const router = express.Router();
 router.get('/s', getRegisteredUsers);
 router.post('/signup', signupHandler);
-router.post('/SignIn', SignInHandler);
+router.post('/signin', signInHandler);
 
 export default router;

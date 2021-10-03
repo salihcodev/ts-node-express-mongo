@@ -7,6 +7,9 @@
 # production
 /build
 
+# development
+.db
+
 # misc
 .DS_Store
 
@@ -20,6 +23,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+production.yml
 
-# webstorm files
+# ide files
 .idea

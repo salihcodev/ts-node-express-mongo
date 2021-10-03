@@ -1,14 +1,15 @@
 // pkgs:
+import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
 // utils:
-import Door from '../models/thing.model';
+import Tour from '../models/tour.model';
 
-// door CRUD controllers: searchInAllDoors
+// Tour CRUD controllers: searchInAllTours
 //
 // >>>> read
 // READ ALL:
-export const getDoors = async (req: any, res: any): Promise<void> => {
+export const getTours = async (req: Request, res: Response): Promise<void> => {
     const { page } = req.query;
     // if (!userId) res.status(401).json({ message: `Unauthenticated!!` })
 
@@ -16,98 +17,105 @@ export const getDoors = async (req: any, res: any): Promise<void> => {
         const LIMIT = 6;
         // get the starting index of every page
         const startIndex = (Number(page) - 1) * LIMIT;
-        const total = await Door.countDocuments({});
+        const total = await Tour.countDocuments({});
 
-        const doors = await Door.find()
+        const Tours = await Tour.find()
             .sort({ _id: -1 })
             .limit(LIMIT)
             .skip(startIndex);
 
         res.json({
-            doors,
+            Tours,
             currentPage: Number(page),
             pagesCount: Math.ceil(total / LIMIT),
         });
     } catch (err) {
         res.status(404).json({
-            message: `Could not find any doors.`,
+            message: `Could not find any tours.`,
             error: err,
         });
     }
 };
 
 // >>>> create
-export const createNewDoor = async (req: any, res: any): Promise<void> => {
-    // if (!req.userId) res.status(401).json({ message: `Unauthenticated!!` })
-
-    const doorToCreate = req.body;
-    const newDoor = new Door({
-        ...doorToCreate,
+export const createNewTour = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const TourToCreate = req.body;
+    const newTour = new Tour({
+        ...TourToCreate,
     });
 
     try {
-        await newDoor.save();
+        await newTour.save();
 
-        res.status(201).json(newDoor);
+        res.status(201).json(newTour);
     } catch (err) {
         res.status(409).json({
-            message: `Something went wrong while creating new door, Please try again later.`,
+            message: `Something went wrong while creating new Tour, Please try again later.`,
             error: err,
         });
     }
 };
 
 // >>>> delete
-export const deleteDoor = async (req: any, res: any): Promise<void> => {
+export const deleteTour = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const { id: _id } = req.params;
 
-    // if (!req.userId) res.status(401).json({ message: `Unauthenticated!!` })
     try {
         if (!mongoose.Types.ObjectId.isValid(_id))
             res.status(404).json({
-                message: `There is no door with provided ID: ${_id}`,
+                message: `There is no Tour with provided ID: ${_id}`,
             });
 
-        await Door.findByIdAndRemove(_id);
-        res.status(200).json({ message: 'Door has been deleted successfully' });
+        await Tour.findByIdAndRemove(_id);
+        res.status(200).json({ message: 'Tour has been deleted successfully' });
     } catch (err) {
         res.status(400).json({
-            message: 'Failed to delete the door',
+            message: 'Failed to delete the Tour',
             error: err,
         });
     }
 };
 
 // >>>> update
-export const updateDoor = async (req: any, res: any): Promise<void> => {
-    // if (!req.userId) res.status(401).json({ message: `Unauthenticated!!` })
-
+export const updateTour = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const { id: _id } = req.params;
-    const doorToUpdate = req.body;
+    const TourToUpdate = req.body;
 
     try {
         if (!mongoose.Types.ObjectId.isValid(_id))
             res.status(404).json({
-                message: `There's no door with ID: ${_id}`,
+                message: `There's no tours with ID: ${_id}`,
             });
 
-        const updatedDoor = await Door.findByIdAndUpdate(
+        const updatedTour = await Tour.findByIdAndUpdate(
             _id,
-            { ...doorToUpdate, _id },
+            { ...TourToUpdate, _id },
             { new: true } // to return a new version
         );
 
-        res.json(updatedDoor);
+        res.json(updatedTour);
     } catch (err) {
         res.status(400).json({
-            message: 'Failed to update the door',
+            message: 'Failed to update the Tour',
             error: err,
         });
     }
 };
 
 // get certain one:
-export const getSingleDoor = async (req: any, res: any): Promise<void> => {
+export const getSingleTour = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     // const { userId } = req
     const { id: _id } = req.params;
 
@@ -115,19 +123,19 @@ export const getSingleDoor = async (req: any, res: any): Promise<void> => {
 
     try {
         // should give it valid `id`, otherwise gonna through an error
-        const sDoor = await Door.findById(_id);
+        const sTour = await Tour.findById(_id);
 
-        res.status(200).json(sDoor);
+        res.status(200).json(sTour);
     } catch (err) {
         res.status(404).json({
-            message: `Could not find door with ID: ${_id}`,
+            message: `Could not find tour with ID: ${_id}`,
         });
     }
 };
 
-// door SEARCH controllers:
-// // >>>> in all doors:
-// export const searchInAllDoors = async (req:any, res:any): Promise<void> => {
+// Tour SEARCH controllers:
+// // >>>> in all tours:
+// export const searchInAllTours = async (req:any, res:any): Promise<void> => {
 //     // const { userId } = req
 //     const { searchQuery, tags } = req.query
 //
@@ -137,13 +145,13 @@ export const getSingleDoor = async (req: any, res: any): Promise<void> => {
 //     const title = new RegExp(searchQuery.trim(), 'i')
 //
 //     try {
-//         // retrieve the matched doors
-//         const doors = await Door.find({
+//         // retrieve the matched tours
+//         const tours = await Tour.find({
 //             $or: [{ title }, { tags: { $in: tags.split(',') } }],
 //         })
 //
-//         // retrieve only the doors that belongs to the logged user
-//         res.status(200).json(doors)
+//         // retrieve only the tours that belongs to the logged user
+//         res.status(200).json(tours)
 //     } catch (error) {
 //         res.status(400).json({
 //             message: `Something went wrong ${error.message}`,

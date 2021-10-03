@@ -4,11 +4,11 @@ import morgan from 'morgan';
 import config from 'config';
 import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 
 // import utils:
 // >>>> routers
 import userRouter from './routes/user.router';
+import tourRouter from './routes/tour.router';
 
 // >>>> port that app is using:
 const PORT = process.env.PORT || 5000;
@@ -28,22 +28,24 @@ app.use(cors());
 const { db_connection_uri } = config.get('server');
 
 // >>>> parsing the body
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json());
 
 // HTTPs logger:
-app.use(morgan('tiny'));
+if (process.env.NODE_ENV !== 'production') {
+    app.use(morgan('dev'));
+}
 
 // *******
 //
 // >>>> SETUP ROUTES:
 // initial route:
 app.get('/', (req: Request, res: Response): void => {
-    res.send(`Hello from the backend of your doors server`);
+    res.send(`OK! server is running well now.`);
 });
 
 // >>>> use implemented routers:
-app.use('/user', userRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/user', tourRouter);
 
 // *******
 //
@@ -51,7 +53,7 @@ app.use('/user', userRouter);
 const connectWithDB = async () => {
     try {
         await mongoose.connect(db_connection_uri, {
-            dbName: 'db-name',
+            dbName: 'traveling-champ',
         });
 
         // >>>> listen to the app
@@ -74,7 +76,13 @@ const connectWithDB = async () => {
             console.error(error);
             connectionTries -= 1;
 
-            // wait 5sec. until firing another new DB connecting try.
+            console.log({
+                status: `Failure`,
+                message: `Failed to connect to the database`,
+                remainedTries: connectionTries,
+            });
+
+            // wait 5sec. until firing another new db connecting try.
             await new Promise((res) => setTimeout(res, 5000));
         }
     }

@@ -10,8 +10,8 @@ const userSchema = new Schema({
     password: { type: String, require: true },
     createAt: {
         type: Date,
-        default: new Date()
-    }
+        default: new Date(),
+    },
 });
 
 // create user model:
